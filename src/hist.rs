@@ -1,4 +1,4 @@
-use ndarray::Array1;
+use ndarray::{Array1, Array2};
 use anyhow::{Result, bail};
 
 /// Calculates the number of events in each bin for a single integer array
@@ -15,10 +15,35 @@ pub fn hist1d(arr: &Array1<usize>, nbins: usize) -> Result<Array1<usize>> {
     Ok(events)
 }
 
+/// Calculates the event intersection between two arrays of equal size
+pub fn hist2d(
+    arr_a: &Array1<usize>,
+    arr_b: &Array1<usize>,
+    nbins_a: usize,
+    nbins_b: usize) -> Result<Array2<usize>> 
+{
+    if arr_a.len() != arr_b.len() {
+        bail!("Provided arrays must be of equal size");
+    }
+    let mut events = Array2::zeros((nbins_a, nbins_b));
+    for idx in 0..arr_a.len() {
+        let ix = arr_a[idx];
+        let jx = arr_b[idx];
+        if ix >= nbins_a {
+            bail!("Out of index error found - raise the number of bins provided to array 1");
+        } else if jx >= nbins_b {
+            bail!("Out of index error found - raise the number of bins provided to array 2");
+        } else {
+            events[(ix, jx)] += 1;
+        }
+    }
+    Ok(events)
+}
+
 #[cfg(test)]
 mod testing {
     use ndarray::array;
-    use super::hist1d;
+    use super::{hist1d, hist2d};
 
     #[test]
     fn test_1d_basic() {
@@ -40,4 +65,58 @@ mod testing {
         let arr = array![0, 1, 1, 1, 2, 2];
         hist1d(&arr, 2).unwrap();
     }
+
+    #[test]
+    fn test_2d_basic() {
+        let arr_a = array![0, 1, 1, 1, 2, 2];
+        let arr_b = array![1, 0, 0, 1, 2, 3];
+        let expected = array![
+            [0, 1, 0, 0],
+            [2, 1, 0, 0],
+            [0, 0, 1, 1]
+        ];
+        let hist = hist2d(&arr_a, &arr_b, 3, 4).unwrap();
+        assert_eq!(hist.shape(), &[3, 4]);
+        assert_eq!(hist, expected);
+    }
+
+    #[test]
+    fn test_2d_missing() {
+        let arr_a = array![0, 1, 1, 1, 2, 2];
+        let arr_b = array![1, 0, 0, 1, 2, 3];
+        let expected = array![
+            [0, 1, 0, 0],
+            [2, 1, 0, 0],
+            [0, 0, 1, 1],
+            [0, 0, 0, 0]
+        ];
+        let hist = hist2d(&arr_a, &arr_b, 4, 4).unwrap();
+        assert_eq!(hist.shape(), &[4, 4]);
+        assert_eq!(hist, expected);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_2d_malform_a() {
+        let arr_a = array![0, 1, 1, 1, 2, 2];
+        let arr_b = array![1, 0, 0, 1, 2, 3];
+        hist2d(&arr_a, &arr_b, 2, 4).unwrap();
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_2d_malform_b() {
+        let arr_a = array![0, 1, 1, 1, 2, 2];
+        let arr_b = array![1, 0, 0, 1, 2, 3];
+        hist2d(&arr_a, &arr_b, 3, 3).unwrap();
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_2d_unequal() {
+        let arr_a = array![0, 1, 1, 1, 2, 2];
+        let arr_b = array![1, 0, 0, 1, 2];
+        hist2d(&arr_a, &arr_b, 3, 4).unwrap();
+    }
+
 }
