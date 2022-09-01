@@ -19,7 +19,7 @@ mod testing {
     use super::entropy;
 
     #[test]
-    fn test_entropy_two_values() {
+    fn test_entropy() {
 
         // WolframAlpha: Entropy[{0, 0, 1, 1}]
         assert_eq!(entropy(&array![0.5, 0.5]), 0.6931471805599453);
