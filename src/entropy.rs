@@ -1,19 +1,15 @@
 use ndarray::Array1;
-use anyhow::Result;
-use crate::prob::prob1d;
 
-/// Calculates the empirical entropy of an integer array
-pub fn entropy(x: &Array1<usize>, x_bins: usize) -> Result<f64> {
-    let px = prob1d(&x, x_bins)?;
-    let info = (0..x_bins)
+/// Calculates the empirical entropy of a probability
+pub fn entropy(px: &Array1<f64>) -> f64 {
+    (0..px.len())
         .fold(0.0, |acc, idx| {
             if px[idx] == 0.0 {
                 acc
             } else {
                 acc - (px[idx] * px[idx].ln())
             }
-        });
-    Ok(info)
+        })
 }
 
 #[cfg(test)]
@@ -24,25 +20,15 @@ mod testing {
 
     #[test]
     fn test_entropy_two_values() {
-        // prob (0.2, 0.8)
-        let x = array![0, 0, 1, 1, 1, 1, 1, 1, 1, 1];
-        let hx = entropy(&x, 2).unwrap();
-        assert_eq!(hx, 0.5004024235381879);
+
+        // WolframAlpha: Entropy[{0, 0, 1, 1}]
+        assert_eq!(entropy(&array![0.5, 0.5]), 0.6931471805599453);
+
+        // WolframAlpha: Entropy[{0, 0, 1, 1, 2, 2}]
+        assert_eq!(entropy(&array![1.0/3.0, 1.0/3.0, 1.0/3.0]), 1.0986122886681096);
+
+        // WolframAlpha: Entropy[{0, 0, 1, 1, 2, 2, 3, 3}]
+        assert_eq!(entropy(&array![0.25, 0.25, 0.25, 0.25]), 1.38629436111989061);
     }
 
-    #[test]
-    fn test_entropy_three_values() {
-        // prob (0.2, 0.2, 0.6)
-        let x = array![0, 0, 1, 1, 2, 2, 2, 2, 2, 2];
-        let hx = entropy(&x, 3).unwrap();
-        assert_eq!(hx, 0.9502705392332347);
-    }
-
-    #[test]
-    fn test_entropy_zeros() {
-        // prob (0.2, 0.2, 0.6, 0.0)
-        let x = array![0, 0, 1, 1, 2, 2, 2, 2, 2, 2];
-        let hx = entropy(&x, 4).unwrap();
-        assert_eq!(hx, 0.9502705392332347);
-    }
 }
