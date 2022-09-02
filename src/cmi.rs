@@ -6,30 +6,6 @@ pub fn conditional_mutual_information(p_xyz: &Array3<f64>) -> f64 {
     let p_yz = p_xyz.sum_axis(Axis(0));
     let p_z = p_xz.sum_axis(Axis(0));
 
-    // println!("p_xyz:\n{:?}", p_xyz);
-    // println!("p_xz:\n{:?}", p_xz);
-    // println!("p_yz:\n{:?}", p_yz);
-    // println!("p_z:\n{:?}", p_z);
-    // println!("");
-    // println!("");
-
-    // let dim = p_xyz.dim();
-    // for i in 0..dim.0 {
-    //     for j in 0..dim.1 {
-    //         for k in 0..dim.2 {
-    //             let xyz = p_xyz[(i, j, k)];
-    //             let xz = p_xz[(i,k)];
-    //             let yz = p_yz[(j,k)];
-    //             let z = p_z[k];
-    //             println!(">> {} {} {} {}", xyz, xz, yz, z);
-    //         }
-    //     }
-    // }
-    // 0.0
-
-    // println!("");
-    // println!("");
-
     Zip::from(p_xyz)
         .and_broadcast(&p_xz.insert_axis(Axis(1)))
         .and_broadcast(&p_yz)
