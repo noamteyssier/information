@@ -6,7 +6,7 @@ description = "Information theory functions to use with ndarray"
 documentation = "https://docs.rs/information"
 repository = "https://github.com/noamteyssier/information"
 license = "MIT"
-keywords = ["information theory", "statistics", "ndarray", "math", "entropy"]
+keywords = ["information_theory", "statistics", "ndarray", "math", "entropy"]
 categories = ["science", "mathematics"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
