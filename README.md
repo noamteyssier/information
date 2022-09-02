@@ -2,7 +2,8 @@
 ndarray-based information theory utilities.
 
 # About
-This is a crate to calculate information theory metrics with `ndarray`.
+This is a crate to calculate information theory metrics with [ndarray](https://docs.rs/ndarray).
+
 Check out the [docs](https://docs.rs/information) for usage and examples.
 
 # Functions
