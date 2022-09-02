@@ -1,44 +1,63 @@
-use ndarray::{Array2, Array3};
-
-/// Measures the joint entropy: H(X,Y)
-pub fn joint_entropy(p_xy: &Array2<f64>) -> f64 {
-    p_xy.iter()
-        .fold(0.0, |acc, p| {
-            if *p == 0.0 {
-                acc
-            } else {
-                acc - (p * p.ln())
-            }
-        })
-}
-
-/// Measures the joint entropy: H(X,Y,Z)
-pub fn joint_entropy_3d(p_xyz: &Array3<f64>) -> f64 {
-    p_xyz.iter()
-        .fold(0.0, |acc, xyz| {
-            if *xyz == 0.0 {
-                acc
-            } else {
-                acc - (xyz * xyz.ln())
-            }
-        })
+/// Generalization of Entropy to multiple dimensions
+#[macro_export]
+macro_rules! joint_entropy {
+    ($prob:expr) => {
+        $prob.iter()
+            .fold(0.0, |acc, p| {
+                if *p == 0.0 {
+                    acc
+                } else {
+                    acc - (p * (*p as f64).ln())
+                }
+            })
+    };
 }
 
 #[cfg(test)]
 mod testing {
 
-    use ndarray::{array, Array2, Array1, Array3};
+    use approx::assert_relative_eq;
+    use ndarray::{array, Array2, Array1, Array3, Array4};
     use ndarray_rand::{RandomExt, rand_distr::Uniform};
-    use crate::{entropy::entropy, prob::{prob1d, prob2d}, joint::joint_entropy_3d};
-    use super::joint_entropy;
+    use crate::{entropy::entropy, prob::{prob1d, prob2d}, joint_entropy};
 
     const N_ITER: usize = 1000;
     const ARRAY_SIZE: usize = 100;
 
     #[test]
+    fn test_joint_macro() {
+        for _ in 0..N_ITER {
+            // 1D Entropy
+            let c_x = Array1::random(ARRAY_SIZE, Uniform::new(0.1, 0.8));
+            let p_x = &c_x / c_x.sum();
+            let h = joint_entropy!(&p_x);
+            assert!(h >= 0.0);
+            assert_relative_eq!(h, entropy(&p_x));
+
+            // 2D Entropy
+            let c_xy = Array2::random((2, ARRAY_SIZE), Uniform::new(0.1, 0.8));
+            let p_xy = &c_xy / c_xy.sum();
+            let h = joint_entropy!(&p_xy);
+            assert!(h >= 0.0);
+
+            // 3D Entropy
+            let c_xy = Array3::random((2, 2, ARRAY_SIZE), Uniform::new(0.1, 0.8));
+            let p_xy = &c_xy / c_xy.sum();
+            let h = joint_entropy!(&p_xy);
+            assert!(h >= 0.0);
+
+            // 4D Entropy
+            let c_xy = Array4::random((2, 2, 2, ARRAY_SIZE), Uniform::new(0.1, 0.8));
+            let p_xy = &c_xy / c_xy.sum();
+            let h = joint_entropy!(&p_xy);
+            assert!(h >= 0.0);
+        }
+    }
+
+    #[test]
     fn test_joint() {
         let px = array![[0.5, 0.0], [0.25, 0.25]];
-        let hx = joint_entropy(&px);
+        let hx = joint_entropy!(&px);
         assert_eq!(hx, 1.0397207708399179);
     }
 
@@ -48,7 +67,7 @@ mod testing {
         for _ in 0..N_ITER {
             let c_xy = Array2::random((2, ARRAY_SIZE), Uniform::new(0.1, 0.8));
             let p_xy = &c_xy / c_xy.sum();
-            let h = joint_entropy(&p_xy);
+            let h = joint_entropy!(&p_xy);
             assert!(h >= 0.0);
         }
     }
@@ -59,7 +78,7 @@ mod testing {
         for _ in 0..N_ITER {
             let c_xyz = Array3::random((2, 2, ARRAY_SIZE), Uniform::new(0.1, 0.8));
             let p_xyz = &c_xyz / c_xyz.sum();
-            let h = joint_entropy_3d(&p_xyz);
+            let h = joint_entropy!(&p_xyz);
             assert!(h >= 0.0);
         }
     }
@@ -75,7 +94,7 @@ mod testing {
             let p_x = prob1d(&c_x, 4).unwrap();
             let p_y = prob1d(&c_y, 4).unwrap();
 
-            let h_xy = joint_entropy(&p_xy);
+            let h_xy = joint_entropy!(&p_xy);
             let h_x = entropy(&p_x);
             let h_y = entropy(&p_y);
 
@@ -95,7 +114,7 @@ mod testing {
             let p_x = prob1d(&c_x, 4).unwrap();
             let p_y = prob1d(&c_y, 4).unwrap();
 
-            let h_xy = joint_entropy(&p_xy);
+            let h_xy = joint_entropy!(&p_xy);
             let h_x = entropy(&p_x);
             let h_y = entropy(&p_y);
 

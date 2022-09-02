@@ -23,7 +23,7 @@ mod testing {
     use ndarray::{Array1, Array2, Axis};
     use super::mutual_information;
     use ndarray_rand::{RandomExt, rand_distr::Uniform};
-    use crate::{entropy::entropy, prob::prob2d, joint::joint_entropy, conditional::conditional_entropy};
+    use crate::{entropy::entropy, prob::prob2d, joint_entropy, conditional::conditional_entropy};
 
     const N_ITER: usize = 1000;
     const ARRAY_SIZE: usize = 100;
@@ -72,7 +72,7 @@ mod testing {
             let p_y = p_xy.sum_axis(Axis(1));
 
             let i_xy = mutual_information(&p_xy);
-            let h_joint_xy = joint_entropy(&p_xy);
+            let h_joint_xy = joint_entropy!(&p_xy);
             let h_conditional_xy = conditional_entropy(&p_xy);
 
             let h_x = entropy(&p_x);

@@ -19,7 +19,7 @@ mod testing {
     use ndarray::{array, Array1};
     use super::conditional_entropy;
     use ndarray_rand::{RandomExt, rand_distr::Uniform};
-    use crate::{entropy::entropy, prob::{prob1d, prob2d}, joint::joint_entropy};
+    use crate::{entropy::entropy, prob::{prob1d, prob2d}, joint_entropy};
 
     const N_ITER: usize = 1000;
     const ARRAY_SIZE: usize = 100;
@@ -54,7 +54,7 @@ mod testing {
 
             let h_conditional_xy = conditional_entropy(&p_xy);
             let h_conditional_yx = conditional_entropy(&p_yx);
-            let h_joint_xy = joint_entropy(&p_xy);
+            let h_joint_xy = joint_entropy!(&p_xy);
             let h_x = entropy(&p_x);
             let h_y = entropy(&p_y);
 

@@ -27,7 +27,7 @@ mod testing {
     use approx::assert_relative_eq;
     use ndarray::Array1;
     use ndarray_rand::{RandomExt, rand_distr::Uniform};
-    use crate::{entropy::entropy, prob::{prob1d, prob2d, prob3d}, joint::{joint_entropy, joint_entropy_3d}};
+    use crate::{entropy::entropy, prob::{prob1d, prob2d, prob3d}, joint_entropy};
     use super::conditional_mutual_information;
 
     const N_ITER: usize = 1000;
@@ -64,9 +64,9 @@ mod testing {
             let p_z = prob1d(&z, 2).unwrap();
 
             let i_xyz = conditional_mutual_information(&p_xyz);
-            let h_xz = joint_entropy(&p_xz);
-            let h_yz = joint_entropy(&p_yz);
-            let h_xyz = joint_entropy_3d(&p_xyz);
+            let h_xz = joint_entropy!(&p_xz);
+            let h_yz = joint_entropy!(&p_yz);
+            let h_xyz = joint_entropy!(&p_xyz);
             let h_z = entropy(&p_z);
 
             // Measures: I(X;Y|Z) = H(X,Z) + H(Y,Z) - H(X,Y,Z) - H(Z)
