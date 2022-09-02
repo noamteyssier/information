@@ -1,7 +1,37 @@
 
 use ndarray::{Array2, Axis, Zip};
 
-/// Calculates the mutual information of a two-dimensional array
+/// # Mutual Information
+/// <https://en.wikipedia.org/wiki/Mutual_information>
+///
+/// Calculates the mutual information of a two-dimensional probability matrix
+///
+/// The mutual information I(X;Y) is calculated as follows:
+/// ```math
+/// I(X;Y) = Σ Σ p(x,y) ln [ p(x,y) / (p(x) * p(y) ]
+///          y x
+/// ```
+///
+/// # Usage
+///
+/// ```
+/// use ndarray::Array1;
+/// use ndarray_rand::{RandomExt, rand_distr::Uniform};
+/// use information::{prob2d, mutual_information};
+/// use approx::assert_relative_eq;
+///
+/// let c_x = Array1::random(1000, Uniform::new(0, 3));
+/// let c_y = Array1::random(1000, Uniform::new(0, 3));
+/// 
+/// let p_xy = prob2d(&c_x, &c_y, 4, 4).unwrap();
+/// let p_yx = prob2d(&c_y, &c_x, 4, 4).unwrap();
+/// 
+/// let i_xy = mutual_information(&p_xy);
+/// let i_yx = mutual_information(&p_yx);
+/// 
+/// // Measures: I(X;Y) = I(Y;X)
+/// assert_relative_eq!(i_xy, i_yx, epsilon=1e-14);
+/// ```
 pub fn mutual_information(p_xy: &Array2<f64>) -> f64 {
     Zip::from(p_xy)
         .and_broadcast(&p_xy.sum_axis(Axis(0)))

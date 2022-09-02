@@ -1,4 +1,44 @@
+/// # Joint Entropy
 /// Generalization of Entropy to multiple dimensions
+///
+/// <https://en.wikipedia.org/wiki/Joint_entropy>
+///
+/// Joint entropy is calculated for multiple variables as:
+/// ```math
+/// H(Xi ... Xn) = - Σi ... Σn P( xi, ..., xn ) * ln[ P(xi, ..., xn) ]
+/// ```
+///
+/// # Usage
+/// ```
+/// use ndarray::{Array1, Array2, Array3, Array4};
+/// use ndarray_rand::{RandomExt, rand_distr::Uniform};
+/// use information::joint_entropy;
+///
+/// // 1D Entropy
+/// let c_x = Array1::random(10, Uniform::new(0.1, 0.8));
+/// let p_x = &c_x / c_x.sum();
+/// let h = joint_entropy!(&p_x);
+/// assert!(h >= 0.0);
+///
+/// // 2D Entropy
+/// let c_xy = Array2::random((2, 10), Uniform::new(0.1, 0.8));
+/// let p_xy = &c_xy / c_xy.sum();
+/// let h = joint_entropy!(&p_xy);
+/// assert!(h >= 0.0);
+///
+/// // 3D Entropy
+/// let c_xy = Array3::random((2, 2, 10), Uniform::new(0.1, 0.8));
+/// let p_xy = &c_xy / c_xy.sum();
+/// let h = joint_entropy!(&p_xy);
+/// assert!(h >= 0.0);
+///
+/// // 4D Entropy
+/// let c_xy = Array4::random((2, 2, 2, 10), Uniform::new(0.1, 0.8));
+/// let p_xy = &c_xy / c_xy.sum();
+/// let h = joint_entropy!(&p_xy);
+/// assert!(h >= 0.0);
+/// ```
+///
 #[macro_export]
 macro_rules! joint_entropy {
     ($prob:expr) => {

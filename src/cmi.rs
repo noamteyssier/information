@@ -1,6 +1,33 @@
 use ndarray::{Array3, Axis, Zip};
 
 
+/// # Conditional Mutual Information
+/// <https://en.wikipedia.org/wiki/Conditional_mutual_information>
+///
+/// Calculates the expected value of the mutual information of two random variables given a third.
+///
+/// The conditional mutual information `I(X;Y|Z)` is calculated as follows:
+/// ```math
+/// I(X;Y|Z) = Σ Σ Σ p(x,y,z) * ln [ (p(z) * p(x,y,z)) / (p(x,z) * p(y,z))]
+///            z y x
+/// ```
+///
+/// # Usage
+/// ```
+/// use ndarray::Array1;
+/// use ndarray_rand::{RandomExt, rand_distr::Uniform};
+/// use information::{prob3d, conditional_mutual_information};
+///
+/// let x = Array1::random(1000, Uniform::new(0, 2));
+/// let y = Array1::random(1000, Uniform::new(0, 2));
+/// let z = Array1::random(1000, Uniform::new(0, 2));
+/// let xyz = prob3d(&x, &y, &z, 2, 2, 2).unwrap();
+/// 
+/// let cmi = conditional_mutual_information(&xyz);
+/// 
+/// // Measures: I(X;Y|Z) >= 0
+/// assert!(cmi >= 0.0);
+/// ```
 pub fn conditional_mutual_information(p_xyz: &Array3<f64>) -> f64 {
     let p_xz = p_xyz.sum_axis(Axis(1));
     let p_yz = p_xyz.sum_axis(Axis(0));

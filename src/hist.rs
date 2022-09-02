@@ -1,7 +1,17 @@
 use ndarray::{Array1, Array2, Array3};
 use anyhow::{Result, bail};
 
-/// Calculates the number of events in each bin for a single integer array
+/// Calculates the number of events of each integer bin for a one-dimensional integer array.
+///
+/// # Usage
+/// ```
+/// use ndarray::array;
+/// use information::hist1d;
+///
+/// let arr = array![0, 1, 1, 1, 2, 2];
+/// let hist = hist1d(&arr, 3).unwrap();
+/// assert_eq!(hist, array![1, 3, 2]);
+/// ```
 pub fn hist1d(arr: &Array1<usize>, nbins: usize) -> Result<Array1<usize>> {
     let mut events = Array1::zeros(nbins);
     for idx in arr.iter() {
@@ -15,7 +25,24 @@ pub fn hist1d(arr: &Array1<usize>, nbins: usize) -> Result<Array1<usize>> {
     Ok(events)
 }
 
-/// Calculates the event intersection between two arrays of equal size
+/// Calculates the event intersection between two integer arrays of equal size
+///
+/// # Usage
+/// ```
+/// use ndarray::array;
+/// use information::hist2d;
+///
+/// let arr_a = array![0, 1, 1, 1, 2, 2];
+/// let arr_b = array![1, 0, 0, 1, 2, 3];
+/// let expected = array![
+///     [0, 1, 0, 0],
+///     [2, 1, 0, 0],
+///     [0, 0, 1, 1]
+/// ];
+/// let hist = hist2d(&arr_a, &arr_b, 3, 4).unwrap();
+/// assert_eq!(hist.shape(), &[3, 4]);
+/// assert_eq!(hist, expected);
+/// ```
 pub fn hist2d(
     arr_a: &Array1<usize>,
     arr_b: &Array1<usize>,
@@ -40,7 +67,28 @@ pub fn hist2d(
     Ok(events)
 }
 
-/// Calculates the event intersection between three arrays of equal size
+/// Calculates the event intersection between three integer arrays of equal size
+///
+/// # Usage
+///
+/// ```
+/// use ndarray::array;
+/// use information::hist3d;
+///
+/// let arr_a = array![0, 1, 1];
+/// let arr_b = array![0, 0, 1];
+/// let arr_c = array![1, 1, 1];
+/// let expected = array![
+///     [[0, 1], 
+///      [0, 0]],
+///
+///     [[0, 1], 
+///      [0, 1]]
+/// ];
+/// let hist = hist3d(&arr_a, &arr_b, &arr_c, 2, 2, 2).unwrap();
+/// assert_eq!(hist.shape(), &[2, 2, 2]);
+/// assert_eq!(hist, expected);
+/// ```
 pub fn hist3d(
     arr_a: &Array1<usize>,
     arr_b: &Array1<usize>,

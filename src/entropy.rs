@@ -1,6 +1,29 @@
 use ndarray::Array1;
 
-/// Calculates the empirical entropy of a probability
+/// # Entropy
+/// Calculates the empirical entropy of a probability array measured in nats.
+///
+/// <https://en.wikipedia.org/wiki/Entropy_(information_theory)>
+///
+/// This assumes that the provided array is the probability (and sums to one).
+///
+/// The entropy is calculated as follows:
+/// ```math
+/// H(X) = -Σ p(x) * ln[ p(x) ]
+/// ```
+///
+/// # Usage:
+/// ```
+/// use ndarray::array;
+/// use information::{entropy, prob1d};
+///
+/// let x = array![0, 0, 1, 1];
+/// let p_x = prob1d(&x, 2).unwrap();
+/// let h_x = entropy(&p_x);
+///
+/// assert_eq!(h_x, 0.6931471805599453)
+/// ```
+/// 
 pub fn entropy(px: &Array1<f64>) -> f64 {
     (0..px.len())
         .fold(0.0, |acc, idx| {

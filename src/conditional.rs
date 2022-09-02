@@ -1,5 +1,25 @@
 use ndarray::{Array2, Axis, Zip};
 
+/// # Conditional Entropy
+/// <https://en.wikipedia.org/wiki/Conditional_entropy>
+///
+/// Calculates the conditional entropy of a random variable `X` given that another random variable
+/// `Y` is known measured in nats.
+///
+/// `H(X|Y)` is calculated as follows:
+/// ```math
+/// H(X|Y) = - Σ p(x,y) * ln[ p(x,y) / p(x) ]
+/// ```
+///
+/// # Usage
+/// ```
+/// use ndarray::array;
+/// use information::conditional_entropy;
+///
+/// let p_xy = array![[0.5, 0.0], [0.25, 0.25]];
+/// let hx = conditional_entropy(&p_xy);
+/// assert_eq!(hx, 0.4773856262211097);
+/// ```
 pub fn conditional_entropy(p_xy: &Array2<f64>) -> f64 {
     Zip::from(p_xy)
         .and_broadcast(&p_xy.sum_axis(Axis(0)))
