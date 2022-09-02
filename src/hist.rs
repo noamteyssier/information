@@ -110,7 +110,7 @@ pub fn hist3d(
         } else if jx >= nbins_b {
             bail!("Out of index error found - raise the number of bins provided to array 2");
         } else if kx >= nbins_c {
-            bail!("Out of index error found - raise the number of bins provided to array 2");
+            bail!("Out of index error found - raise the number of bins provided to array 3");
         } else {
             events[(ix, jx, kx)] += 1;
         }
