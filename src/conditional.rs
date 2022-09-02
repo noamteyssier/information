@@ -20,7 +20,7 @@ use ndarray::{Array2, Axis, Zip};
 /// let hx = conditional_entropy(&p_xy);
 /// assert_eq!(hx, 0.4773856262211097);
 /// ```
-pub fn conditional_entropy(p_xy: &Array2<f64>) -> f64 {
+#[must_use] pub fn conditional_entropy(p_xy: &Array2<f64>) -> f64 {
     Zip::from(p_xy)
         .and_broadcast(&p_xy.sum_axis(Axis(0)))
         .fold(0.0, |acc, xy, y| {

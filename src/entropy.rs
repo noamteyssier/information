@@ -24,7 +24,7 @@ use ndarray::Array1;
 /// assert_eq!(h_x, 0.6931471805599453)
 /// ```
 /// 
-pub fn entropy(px: &Array1<f64>) -> f64 {
+#[must_use] pub fn entropy(px: &Array1<f64>) -> f64 {
     (0..px.len())
         .fold(0.0, |acc, idx| {
             if px[idx] == 0.0 {
