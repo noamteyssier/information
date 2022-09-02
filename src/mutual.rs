@@ -1,6 +1,7 @@
 
 use ndarray::{Array2, Axis, Zip};
 
+/// Calculates the mutual information of a two-dimensional array
 pub fn mutual_information(p_xy: &Array2<f64>) -> f64 {
     Zip::from(p_xy)
         .and_broadcast(&p_xy.sum_axis(Axis(0)))
