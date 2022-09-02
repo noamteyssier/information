@@ -35,6 +35,8 @@ mod testing {
             let c_xy = Array2::random((2, ARRAY_SIZE), Uniform::new(0.1, 0.9));
             let p_xy = &c_xy / c_xy.sum();
             let i_xy = mutual_information(&p_xy);
+
+            // Measures: I(X;Y) >= 0
             assert!(i_xy >= 0.0);
         }
     }
@@ -52,6 +54,7 @@ mod testing {
             let i_xy = mutual_information(&p_xy);
             let i_yx = mutual_information(&p_yx);
 
+            // Measures: I(X;Y) = I(Y;X)
             assert_relative_eq!(i_xy, i_yx, epsilon=EPSILON);
         }
     }
@@ -74,7 +77,10 @@ mod testing {
             let h_x = entropy(&p_x);
             let h_y = entropy(&p_y);
 
+            // Measures: I(X;Y) = H(Y) - H(Y|X)
             assert_relative_eq!(i_xy, h_y - h_conditional_xy, epsilon=EPSILON);
+            
+            // Measures: I(X:Y) = H(X) + H(Y) - H(X,Y)
             assert_relative_eq!(i_xy, h_x + h_y - h_joint_xy, epsilon=EPSILON);
         }
 
