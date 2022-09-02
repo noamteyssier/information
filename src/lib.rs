@@ -4,3 +4,4 @@ pub mod entropy;
 pub mod joint;
 pub mod conditional;
 pub mod mutual;
+pub mod cmi;

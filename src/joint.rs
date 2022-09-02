@@ -1,7 +1,8 @@
-use ndarray::Array2;
+use ndarray::{Array2, Array3};
 
-pub fn joint_entropy(px: &Array2<f64>) -> f64 {
-    px.iter()
+/// Measures the joint entropy: H(X,Y)
+pub fn joint_entropy(p_xy: &Array2<f64>) -> f64 {
+    p_xy.iter()
         .fold(0.0, |acc, p| {
             if *p == 0.0 {
                 acc
@@ -11,12 +12,24 @@ pub fn joint_entropy(px: &Array2<f64>) -> f64 {
         })
 }
 
+/// Measures the joint entropy: H(X,Y,Z)
+pub fn joint_entropy_3d(p_xyz: &Array3<f64>) -> f64 {
+    p_xyz.iter()
+        .fold(0.0, |acc, xyz| {
+            if *xyz == 0.0 {
+                acc
+            } else {
+                acc - (xyz * xyz.ln())
+            }
+        })
+}
+
 #[cfg(test)]
 mod testing {
 
-    use ndarray::{array, Array2, Array1};
+    use ndarray::{array, Array2, Array1, Array3};
     use ndarray_rand::{RandomExt, rand_distr::Uniform};
-    use crate::{entropy::entropy, prob::{prob1d, prob2d}};
+    use crate::{entropy::entropy, prob::{prob1d, prob2d}, joint::joint_entropy_3d};
     use super::joint_entropy;
 
     const N_ITER: usize = 1000;
@@ -36,6 +49,17 @@ mod testing {
             let c_xy = Array2::random((2, ARRAY_SIZE), Uniform::new(0.1, 0.8));
             let p_xy = &c_xy / c_xy.sum();
             let h = joint_entropy(&p_xy);
+            assert!(h >= 0.0);
+        }
+    }
+
+    #[test]
+    /// https://en.wikipedia.org/wiki/Joint_entropy#Nonnegativity
+    fn test_nonnegative_3d() {
+        for _ in 0..N_ITER {
+            let c_xyz = Array3::random((2, 2, ARRAY_SIZE), Uniform::new(0.1, 0.8));
+            let p_xyz = &c_xyz / c_xyz.sum();
+            let h = joint_entropy_3d(&p_xyz);
             assert!(h >= 0.0);
         }
     }
