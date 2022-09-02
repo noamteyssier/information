@@ -25,7 +25,7 @@ pub fn conditional_mutual_information(p_xyz: &Array3<f64>) -> f64 {
 mod testing {
 
     use approx::assert_relative_eq;
-    use ndarray::Array1;
+    use ndarray::{Array1, Array3};
     use ndarray_rand::{RandomExt, rand_distr::Uniform};
     use crate::{entropy::entropy, prob::{prob1d, prob2d, prob3d}, joint_entropy};
     use super::conditional_mutual_information;
@@ -33,6 +33,13 @@ mod testing {
     const N_ITER: usize = 1000;
     const ARRAY_SIZE: usize = 100;
     const EPSILON: f64 = 1e-12;
+
+    #[test]
+    fn test_zeros() {
+        let p_xyz = Array3::zeros((2, 2, ARRAY_SIZE));
+        let cmi = conditional_mutual_information(&p_xyz);
+        assert_eq!(cmi, 0.0);
+    }
 
     #[test]
     /// https://en.wikipedia.org/wiki/Conditional_mutual_information#Nonnegativity
