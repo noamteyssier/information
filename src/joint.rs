@@ -42,24 +42,27 @@
 #[macro_export]
 macro_rules! joint_entropy {
     ($prob:expr) => {
-        $prob.iter()
-            .fold(0.0, |acc, p| {
-                if *p == 0.0 {
-                    acc
-                } else {
-                    acc - (p * (*p as f64).ln())
-                }
-            })
+        $prob.iter().fold(0.0, |acc, p| {
+            if *p == 0.0 {
+                acc
+            } else {
+                acc - (p * (*p as f64).ln())
+            }
+        })
     };
 }
 
 #[cfg(test)]
 mod testing {
 
+    use crate::{
+        entropy::entropy,
+        joint_entropy,
+        prob::{prob1d, prob2d},
+    };
     use approx::assert_relative_eq;
-    use ndarray::{array, Array2, Array1, Array3, Array4};
-    use ndarray_rand::{RandomExt, rand_distr::Uniform};
-    use crate::{entropy::entropy, prob::{prob1d, prob2d}, joint_entropy};
+    use ndarray::{array, Array1, Array2, Array3, Array4};
+    use ndarray_rand::{rand_distr::Uniform, RandomExt};
 
     const N_ITER: usize = 1000;
     const ARRAY_SIZE: usize = 100;
@@ -161,5 +164,4 @@ mod testing {
             assert!(h_xy <= h_x + h_y);
         }
     }
-
 }

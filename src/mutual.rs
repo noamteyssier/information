@@ -1,4 +1,3 @@
-
 use ndarray::{Array2, Axis, Zip};
 
 /// # Mutual Information
@@ -22,17 +21,18 @@ use ndarray::{Array2, Axis, Zip};
 ///
 /// let c_x = Array1::random(1000, Uniform::new(0, 3));
 /// let c_y = Array1::random(1000, Uniform::new(0, 3));
-/// 
+///
 /// let p_xy = prob2d(&c_x, &c_y, 4, 4).unwrap();
 /// let p_yx = prob2d(&c_y, &c_x, 4, 4).unwrap();
-/// 
+///
 /// let i_xy = mutual_information(&p_xy);
 /// let i_yx = mutual_information(&p_yx);
-/// 
+///
 /// // Measures: I(X;Y) = I(Y;X)
 /// assert_relative_eq!(i_xy, i_yx, epsilon=1e-14);
 /// ```
-#[must_use] pub fn mutual_information(p_xy: &Array2<f64>) -> f64 {
+#[must_use]
+pub fn mutual_information(p_xy: &Array2<f64>) -> f64 {
     Zip::from(p_xy)
         .and_broadcast(&p_xy.sum_axis(Axis(0)))
         .and_broadcast(&p_xy.sum_axis(Axis(1)).insert_axis(Axis(1)))
@@ -42,18 +42,17 @@ use ndarray::{Array2, Axis, Zip};
             } else {
                 acc + (xy * (xy / (x * y)).ln())
             }
-
         })
 }
 
 #[cfg(test)]
 mod testing {
 
+    use super::mutual_information;
+    use crate::{conditional::conditional_entropy, entropy::entropy, joint_entropy, prob::prob2d};
     use approx::assert_relative_eq;
     use ndarray::{Array1, Array2, Axis};
-    use super::mutual_information;
-    use ndarray_rand::{RandomExt, rand_distr::Uniform};
-    use crate::{entropy::entropy, prob::prob2d, joint_entropy, conditional::conditional_entropy};
+    use ndarray_rand::{rand_distr::Uniform, RandomExt};
 
     const N_ITER: usize = 1000;
     const ARRAY_SIZE: usize = 100;
@@ -86,7 +85,7 @@ mod testing {
             let i_yx = mutual_information(&p_yx);
 
             // Measures: I(X;Y) = I(Y;X)
-            assert_relative_eq!(i_xy, i_yx, epsilon=EPSILON);
+            assert_relative_eq!(i_xy, i_yx, epsilon = EPSILON);
         }
     }
 
@@ -109,11 +108,10 @@ mod testing {
             let h_y = entropy(&p_y);
 
             // Measures: I(X;Y) = H(Y) - H(Y|X)
-            assert_relative_eq!(i_xy, h_y - h_conditional_xy, epsilon=EPSILON);
-            
-            // Measures: I(X:Y) = H(X) + H(Y) - H(X,Y)
-            assert_relative_eq!(i_xy, h_x + h_y - h_joint_xy, epsilon=EPSILON);
-        }
+            assert_relative_eq!(i_xy, h_y - h_conditional_xy, epsilon = EPSILON);
 
+            // Measures: I(X:Y) = H(X) + H(Y) - H(X,Y)
+            assert_relative_eq!(i_xy, h_x + h_y - h_joint_xy, epsilon = EPSILON);
+        }
     }
 }

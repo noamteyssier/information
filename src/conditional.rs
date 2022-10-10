@@ -20,7 +20,8 @@ use ndarray::{Array2, Axis, Zip};
 /// let hx = conditional_entropy(&p_xy);
 /// assert_eq!(hx, 0.4773856262211097);
 /// ```
-#[must_use] pub fn conditional_entropy(p_xy: &Array2<f64>) -> f64 {
+#[must_use]
+pub fn conditional_entropy(p_xy: &Array2<f64>) -> f64 {
     Zip::from(p_xy)
         .and_broadcast(&p_xy.sum_axis(Axis(0)))
         .fold(0.0, |acc, xy, y| {
@@ -35,11 +36,15 @@ use ndarray::{Array2, Axis, Zip};
 #[cfg(test)]
 mod testing {
 
+    use super::conditional_entropy;
+    use crate::{
+        entropy::entropy,
+        joint_entropy,
+        prob::{prob1d, prob2d},
+    };
     use approx::assert_relative_eq;
     use ndarray::{array, Array1};
-    use super::conditional_entropy;
-    use ndarray_rand::{RandomExt, rand_distr::Uniform};
-    use crate::{entropy::entropy, prob::{prob1d, prob2d}, joint_entropy};
+    use ndarray_rand::{rand_distr::Uniform, RandomExt};
 
     const N_ITER: usize = 1000;
     const ARRAY_SIZE: usize = 100;
@@ -104,8 +109,11 @@ mod testing {
             let h_y = entropy(&p_y);
 
             // Measures: H(Y|X) = H(X|Y) - H(X) + H(Y)
-            assert_relative_eq!(h_conditional_yx, h_conditional_xy - h_x + h_y, epsilon = EPSILON);
+            assert_relative_eq!(
+                h_conditional_yx,
+                h_conditional_xy - h_x + h_y,
+                epsilon = EPSILON
+            );
         }
     }
-
 }

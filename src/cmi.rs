@@ -1,6 +1,5 @@
 use ndarray::{Array3, Axis, Zip};
 
-
 /// # Conditional Mutual Information
 /// <https://en.wikipedia.org/wiki/Conditional_mutual_information>
 ///
@@ -22,13 +21,14 @@ use ndarray::{Array3, Axis, Zip};
 /// let y = Array1::random(1000, Uniform::new(0, 2));
 /// let z = Array1::random(1000, Uniform::new(0, 2));
 /// let xyz = prob3d(&x, &y, &z, 2, 2, 2).unwrap();
-/// 
+///
 /// let cmi = conditional_mutual_information(&xyz);
-/// 
+///
 /// // Measures: I(X;Y|Z) >= 0
 /// assert!(cmi >= 0.0);
 /// ```
-#[must_use] pub fn conditional_mutual_information(p_xyz: &Array3<f64>) -> f64 {
+#[must_use]
+pub fn conditional_mutual_information(p_xyz: &Array3<f64>) -> f64 {
     let p_xz = p_xyz.sum_axis(Axis(1));
     let p_yz = p_xyz.sum_axis(Axis(0));
     let p_z = p_xz.sum_axis(Axis(0));
@@ -40,8 +40,7 @@ use ndarray::{Array3, Axis, Zip};
         .fold(0.0, |acc, xyz, xz, yz, z| {
             if *xyz == 0.0 || *xz == 0.0 || *yz == 0.0 || *z == 0.0 {
                 acc
-            }
-            else {
+            } else {
                 // println!(">> {} {} {} {}", xyz, xz, yz, z);
                 acc + (xyz * ((z * xyz) / (xz * yz)).ln())
             }
@@ -51,11 +50,15 @@ use ndarray::{Array3, Axis, Zip};
 #[cfg(test)]
 mod testing {
 
+    use super::conditional_mutual_information;
+    use crate::{
+        entropy::entropy,
+        joint_entropy,
+        prob::{prob1d, prob2d, prob3d},
+    };
     use approx::assert_relative_eq;
     use ndarray::{Array1, Array3};
-    use ndarray_rand::{RandomExt, rand_distr::Uniform};
-    use crate::{entropy::entropy, prob::{prob1d, prob2d, prob3d}, joint_entropy};
-    use super::conditional_mutual_information;
+    use ndarray_rand::{rand_distr::Uniform, RandomExt};
 
     const N_ITER: usize = 1000;
     const ARRAY_SIZE: usize = 100;
@@ -104,9 +107,7 @@ mod testing {
             let h_z = entropy(&p_z);
 
             // Measures: I(X;Y|Z) = H(X,Z) + H(Y,Z) - H(X,Y,Z) - H(Z)
-            assert_relative_eq!(i_xyz, h_xz + h_yz - h_xyz - h_z, epsilon=EPSILON);
+            assert_relative_eq!(i_xyz, h_xz + h_yz - h_xyz - h_z, epsilon = EPSILON);
         }
-
     }
-
 }

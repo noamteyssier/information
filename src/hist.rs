@@ -1,5 +1,5 @@
+use anyhow::{bail, Result};
 use ndarray::{Array1, Array2, Array3};
-use anyhow::{Result, bail};
 
 /// Calculates the number of events of each integer bin for a one-dimensional integer array.
 ///
@@ -17,8 +17,7 @@ pub fn hist1d(arr: &Array1<usize>, nbins: usize) -> Result<Array1<usize>> {
     for idx in arr.iter() {
         if *idx < nbins {
             events[*idx] += 1;
-        }
-        else {
+        } else {
             bail!("Out of index error found - raise the number of bins provided");
         }
     }
@@ -47,8 +46,8 @@ pub fn hist2d(
     arr_a: &Array1<usize>,
     arr_b: &Array1<usize>,
     nbins_a: usize,
-    nbins_b: usize) -> Result<Array2<usize>> 
-{
+    nbins_b: usize,
+) -> Result<Array2<usize>> {
     if arr_a.len() != arr_b.len() {
         bail!("Provided arrays must be of equal size");
     }
@@ -79,10 +78,10 @@ pub fn hist2d(
 /// let arr_b = array![0, 0, 1];
 /// let arr_c = array![1, 1, 1];
 /// let expected = array![
-///     [[0, 1], 
+///     [[0, 1],
 ///      [0, 0]],
 ///
-///     [[0, 1], 
+///     [[0, 1],
 ///      [0, 1]]
 /// ];
 /// let hist = hist3d(&arr_a, &arr_b, &arr_c, 2, 2, 2).unwrap();
@@ -95,8 +94,8 @@ pub fn hist3d(
     arr_c: &Array1<usize>,
     nbins_a: usize,
     nbins_b: usize,
-    nbins_c: usize) -> Result<Array3<usize>> 
-{
+    nbins_c: usize,
+) -> Result<Array3<usize>> {
     if arr_a.len() != arr_b.len() || arr_a.len() != arr_c.len() {
         bail!("Provided arrays must be of equal size");
     }
@@ -120,8 +119,8 @@ pub fn hist3d(
 
 #[cfg(test)]
 mod testing {
-    use ndarray::array;
     use super::{hist1d, hist2d, hist3d};
+    use ndarray::array;
 
     #[test]
     fn test_1d_basic() {
@@ -148,11 +147,7 @@ mod testing {
     fn test_2d_basic() {
         let arr_a = array![0, 1, 1, 1, 2, 2];
         let arr_b = array![1, 0, 0, 1, 2, 3];
-        let expected = array![
-            [0, 1, 0, 0],
-            [2, 1, 0, 0],
-            [0, 0, 1, 1]
-        ];
+        let expected = array![[0, 1, 0, 0], [2, 1, 0, 0], [0, 0, 1, 1]];
         let hist = hist2d(&arr_a, &arr_b, 3, 4).unwrap();
         assert_eq!(hist.shape(), &[3, 4]);
         assert_eq!(hist, expected);
@@ -162,12 +157,7 @@ mod testing {
     fn test_2d_missing() {
         let arr_a = array![0, 1, 1, 1, 2, 2];
         let arr_b = array![1, 0, 0, 1, 2, 3];
-        let expected = array![
-            [0, 1, 0, 0],
-            [2, 1, 0, 0],
-            [0, 0, 1, 1],
-            [0, 0, 0, 0]
-        ];
+        let expected = array![[0, 1, 0, 0], [2, 1, 0, 0], [0, 0, 1, 1], [0, 0, 0, 0]];
         let hist = hist2d(&arr_a, &arr_b, 4, 4).unwrap();
         assert_eq!(hist.shape(), &[4, 4]);
         assert_eq!(hist, expected);
@@ -202,13 +192,7 @@ mod testing {
         let arr_a = array![0, 1, 1];
         let arr_b = array![0, 0, 1];
         let arr_c = array![1, 1, 1];
-        let expected = array![
-            [[0, 1], 
-             [0, 0]],
-
-            [[0, 1], 
-             [0, 1]]
-        ];
+        let expected = array![[[0, 1], [0, 0]], [[0, 1], [0, 1]]];
         let hist = hist3d(&arr_a, &arr_b, &arr_c, 2, 2, 2).unwrap();
         assert_eq!(hist.shape(), &[2, 2, 2]);
         assert_eq!(hist, expected);
@@ -219,16 +203,7 @@ mod testing {
         let arr_a = array![0, 1, 1];
         let arr_b = array![0, 0, 1];
         let arr_c = array![1, 1, 1];
-        let expected = array![
-            [[0, 1], 
-             [0, 0]],
-
-            [[0, 1], 
-             [0, 1]],
-
-            [[0, 0],
-             [0, 0]]
-        ];
+        let expected = array![[[0, 1], [0, 0]], [[0, 1], [0, 1]], [[0, 0], [0, 0]]];
         let hist = hist3d(&arr_a, &arr_b, &arr_c, 3, 2, 2).unwrap();
         assert_eq!(hist.shape(), &[3, 2, 2]);
         assert_eq!(hist, expected);
@@ -242,7 +217,6 @@ mod testing {
         let arr_c = array![1, 1, 1];
         hist3d(&arr_a, &arr_b, &arr_c, 2, 2, 2).unwrap();
     }
-
 
     #[test]
     #[should_panic]
@@ -271,7 +245,6 @@ mod testing {
         hist3d(&arr_a, &arr_b, &arr_c, 1, 2, 2).unwrap();
     }
 
-
     #[test]
     #[should_panic]
     fn test_3d_malform_b() {
@@ -289,5 +262,4 @@ mod testing {
         let arr_c = array![1, 1, 1];
         hist3d(&arr_a, &arr_b, &arr_c, 2, 2, 1).unwrap();
     }
-
 }
