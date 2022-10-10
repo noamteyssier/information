@@ -2,6 +2,7 @@
 
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.md)
 ![actions status](https://github.com/noamteyssier/information/workflows/CI/badge.svg)
+[![codecov](https://codecov.io/gh/noamteyssier/information/branch/main/graph/badge.svg?token=TL92OX90AM)](https://codecov.io/gh/noamteyssier/information)
 
 ndarray-based information theory utilities.
 
